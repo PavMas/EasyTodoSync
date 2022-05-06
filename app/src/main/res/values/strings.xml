@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">EasyTodo</string>
+    <string name="hint_log">Введите логин</string>
+    <string name="hint_pass">Введите пароль</string>
+    <string name="btn">Вход</string>
+    <string name="btn_set">SET</string>
+    <string name="btn_crt">Сохранить</string>
+    <string name="text_label_1">Главная</string>
+    <string name="text_label_2">Аккаунт</string>
+    <string name="set_time">Задайте время</string>
+    <string name="set_date">Задайте дату</string>
+    <string name="task_hint">Что выхотите сделать?</string>
+    <string name="task_descript_hint">Опишите задачу</string>
+    <string name="task_delete">Удалить задачу</string>
+</resources>

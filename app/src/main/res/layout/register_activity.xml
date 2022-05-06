@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/register_fragment">
+
+    <EditText
+        android:id="@+id/et_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:ems="10"
+        android:hint="Имя"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/et_surname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:ems="10"
+        android:hint="Фамилия"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_name" />
+
+    <EditText
+        android:id="@+id/et_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:ems="10"
+        android:hint="E-mail"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_surname" />
+
+    <Button
+        android:id="@+id/regBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Зарегистрироваться"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_pass"
+        app:layout_constraintVertical_bias="0.9" />
+
+    <EditText
+        android:id="@+id/et_pass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:ems="10"
+        android:hint="Пароль"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_email" />
+
+    <TextView
+        android:id="@+id/tv_err"
+        android:layout_width="207dp"
+        android:layout_height="145dp"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/regBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_pass"
+        app:layout_constraintVertical_bias="0.952" />
+
+    <RadioGroup
+        android:layout_width="217dp"
+        android:layout_height="79dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.525"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.61">
+
+        <RadioButton
+            android:id="@+id/bt_r_main"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:text="Босс"
+            android:textSize="20sp" />
+
+        <RadioButton
+            android:id="@+id/bt_r_sub"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:text="Подчиненный"
+            android:textSize="20sp" />
+    </RadioGroup>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
