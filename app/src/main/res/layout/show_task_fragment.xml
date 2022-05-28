@@ -56,17 +56,17 @@
 
     <TextView
         android:id="@+id/delete_task"
-        android:layout_width="187dp"
-        android:layout_height="40dp"
+        android:layout_width="184dp"
+        android:layout_height="37dp"
         android:text="@string/task_delete"
         android:textColor="#FF0000"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/btn_crtView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.071"
+        app:layout_constraintHorizontal_bias="0.07"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/eT_taskView"
-        app:layout_constraintVertical_bias="0.581" />
+        app:layout_constraintVertical_bias="0.58" />
 
     <EditText
         android:id="@+id/tV_taskView"

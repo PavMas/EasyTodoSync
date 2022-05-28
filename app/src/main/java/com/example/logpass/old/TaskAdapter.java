@@ -46,7 +46,7 @@ return null;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
-            tV_task = itemView.findViewById(R.id.tV_task);
+            tV_task = itemView.findViewById(R.id.tv_task);
             tV_date = itemView.findViewById(R.id.tv_date);
             is_done = itemView.findViewById(R.id.cB_done);
         }

@@ -12,4 +12,7 @@
     <string name="task_hint">Что выхотите сделать?</string>
     <string name="task_descript_hint">Опишите задачу</string>
     <string name="task_delete">Удалить задачу</string>
+    <string name="task_delete_arch">Удалить из архива</string>
+    <string name="description">Подробнее</string>
+    <string name="cb_conplete">Выполнено</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.logpass;
+package com.example.logpass.classes;
 
 public class RegUser {
     public String name, surname, role, uid;

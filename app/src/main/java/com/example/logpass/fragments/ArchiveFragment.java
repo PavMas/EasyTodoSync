@@ -1,4 +1,4 @@
-package com.example.logpass;
+package com.example.logpass.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,16 +10,17 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.logpass.adapters.MyListAdapter;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.example.logpass.R;
+import com.example.logpass.adapters.ArchAdapter;
+import com.example.logpass.classes.TaskItem;
+import com.example.logpass.adapters.MainAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +30,8 @@ public class ArchiveFragment extends Fragment {
     private View view;
     private RecyclerView rv;
     DatabaseReference mDataBase;
-    private static List<TaskItem> items = new ArrayList<>();
-    private MyListAdapter listAdapter;
+    private List<TaskItem> items = new ArrayList<>();
+    private ArchAdapter listAdapter;
 
     @Nullable
     @Override
@@ -45,8 +46,10 @@ public class ArchiveFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mDataBase = FirebaseDatabase.getInstance().getReference("Tasks");
-        mDataBase.addValueEventListener(vListener);
+        setManagerAndAdapter();
+        //mDataBase.addValueEventListener(vListener);
     }
+    /*
     ValueEventListener vListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -67,10 +70,12 @@ public class ArchiveFragment extends Fragment {
         }
     };
 
+     */
+
     private void setManagerAndAdapter() {
         rv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        listAdapter = new MyListAdapter(getContext(), getActivity(), true);
-        listAdapter.setItems(items);
+        listAdapter = new ArchAdapter(getContext());
+        //listAdapter.setItems(items);
         rv.setAdapter(listAdapter);
     }
 
@@ -82,8 +87,9 @@ public class ArchiveFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        getFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.fragment_container, new MainFragment()).commit();
+        ((AppCompatActivity)getContext()).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.fragment_container, new MainFragment()).commit();
         getActivity().setTitle("EasyTodo: Задачи");
         return super.onOptionsItemSelected(item);
     }
+
 }

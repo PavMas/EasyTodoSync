@@ -1,12 +1,14 @@
-package com.example.logpass;
+package com.example.logpass.fragments.dialogs;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Dialog;
 
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,17 +20,23 @@ import android.widget.Toast;
 
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.room.Room;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.example.logpass.recievers.AlarmReceiver;
+import com.example.logpass.DB.AppDB;
+import com.example.logpass.MainActivity;
+import com.example.logpass.R;
+import com.example.logpass.classes.TaskItem;
+import com.example.logpass.fragments.MainFragment;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -37,6 +45,7 @@ import java.util.Calendar;
 
 public class TaskEditDialogMD extends DialogFragment {
     public static final String TAG = "dialog";
+
 
     private Toolbar toolbar;
     private Button crt, setTime, setDate;
@@ -47,15 +56,30 @@ public class TaskEditDialogMD extends DialogFragment {
 
     Calendar calendar = Calendar.getInstance();
     protected DatabaseReference mDataBase = FirebaseDatabase.getInstance().getReference("Tasks");
-    FirebaseUser user = AccountFragment.mAuth.getCurrentUser();
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+    private final AppDB database;
+
+    Context context;
 
     int count;
     String date1, task, time, descript;
 
-    public static TaskEditDialogMD display(FragmentManager fragmentManager) {
-        TaskEditDialogMD exampleDialog = new TaskEditDialogMD();
+    public TaskEditDialogMD(Context context){
+        database = Room.databaseBuilder(context, AppDB.class, MainActivity.DATABASE_NAME)
+                .build();
+        this.context = context;
+    }
+
+    public static void display(FragmentManager fragmentManager, Context context) {
+        TaskEditDialogMD exampleDialog = new TaskEditDialogMD(context);
         exampleDialog.show(fragmentManager, TAG);
-        return exampleDialog;
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MainFragment()).commit();
     }
 
     @Override
@@ -77,7 +101,7 @@ public class TaskEditDialogMD extends DialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         view = inflater.inflate(R.layout.dialog, container, false);
         init();
@@ -87,7 +111,7 @@ public class TaskEditDialogMD extends DialogFragment {
 
 
     @Override
-    public void onViewCreated(View view1, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view1, Bundle savedInstanceState) {
         super.onViewCreated(view1, savedInstanceState);
         toolbar.setNavigationOnClickListener(v -> dismiss());
         toolbar.setTitle("Создать задачу");
@@ -131,6 +155,7 @@ public class TaskEditDialogMD extends DialogFragment {
             materialDatePicker.show(getChildFragmentManager(), "MD_DATE_PICKER");
         });
         crt.setOnClickListener(v -> {
+            /*
             mDataBase = FirebaseDatabase.getInstance().getReference("Tasks");
             mDataBase.child(user.getUid()).child("items").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                 @Override
@@ -141,6 +166,8 @@ public class TaskEditDialogMD extends DialogFragment {
                     }
                 }
             });
+             */
+            createItem();
         });
         toolbar.setOnMenuItemClickListener(item -> {
             dismiss();
@@ -161,19 +188,30 @@ public class TaskEditDialogMD extends DialogFragment {
     }
     private void createItem(){
         if(FieldsOk()) {
+            //SharedPreferences mPrefs = requireActivity().getSharedPreferences("myprefs", Context.MODE_PRIVATE);
+            String uid = user.getUid();
             long id = System.currentTimeMillis();
             task = et_task.getText().toString();
             descript = et_descript.getText().toString();
-            mDataBase.child(user.getUid()).child("items").setValue(count + 1);
-            mDataBase.child(user.getUid()).child(String.valueOf(id)).setValue(new TaskItem(date1, time, task, "true", id+"", descript));
-            AlarmManager alarmMgr = (AlarmManager)getContext().getSystemService(Context.ALARM_SERVICE);
+            TaskItem item = new TaskItem(id+"", date1, time, task, "true", descript, "false", "false", "false");
+            addItem(item);
+            SharedPreferences.Editor editor = requireActivity().getSharedPreferences("myprefs", Context.MODE_PRIVATE).edit();
+            editor.putLong(uid+"version", id).apply();
+            if(MainActivity.hasConnection(requireContext())){
+                mDataBase.child(uid).child("items").setValue(count + 1);
+                mDataBase.child(uid).child(id+"").setValue(item);
+                mDataBase.child(uid).child("version").setValue(id);
+            }
+            AlarmManager alarmMgr = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
             Intent intent1 = new Intent(getContext(), AlarmReceiver.class);
             intent1.putExtra("Task", et_task.getText().toString());
             intent1.putExtra("id", id);
             intent1.putExtra("idStr", id+"");
-            PendingIntent alarmIntent = PendingIntent.getBroadcast(getContext(), (int)System.currentTimeMillis(), intent1, PendingIntent.FLAG_ONE_SHOT);
+            intent1.putExtra("Date", time+date1);
+            @SuppressLint("UnspecifiedImmutableFlag") PendingIntent alarmIntent = PendingIntent.getBroadcast(getContext(), (int)System.currentTimeMillis(), intent1, PendingIntent.FLAG_ONE_SHOT);
             alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
             dismiss();
+
         }
     }
     private boolean FieldsOk(){
@@ -228,5 +266,13 @@ public class TaskEditDialogMD extends DialogFragment {
             return str.charAt(0) - 48;
         else
             return Integer.parseInt(str.substring(0, 2));
+    }
+
+    public void addItem(TaskItem twit){
+        Thread thread = new Thread(() -> {
+            database.itemDao().insert(twit);
+            database.close();
+        });
+        thread.start();
     }
 }

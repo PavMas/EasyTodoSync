@@ -1,5 +1,8 @@
-package com.example.logpass;
+package com.example.logpass.fragments;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,8 +14,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.logpass.MainActivity;
+import com.example.logpass.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -32,6 +38,9 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     protected static FirebaseUser user;
     private String pass;
     private String log;
+    private final String APP_PREFERENCES = "myprefs";
+
+    SharedPreferences mPrefs;
 
     @Nullable
     @Override
@@ -52,6 +61,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         goRegBtn = (Button) view.findViewById(R.id.goReg);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -62,14 +72,21 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
             case R.id.signIn_btn:
                 pass = editPass.getText().toString();
                 log = editLog.getText().toString();
+                mAuth = FirebaseAuth.getInstance();
                 if (FieldsOk()) {
+                    mPrefs = getContext().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor  = mPrefs.edit();
                     mAuth = FirebaseAuth.getInstance();
                     mAuth.signInWithEmailAndPassword(log, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 user = mAuth.getCurrentUser();
-                                getFragmentManager().beginTransaction().replace(R.id.fragment_container, new InActivity()).commit();
+                                assert user != null;
+                                editor.putString("dbname", user.getUid()).apply();
+                                MainActivity.DATABASE_NAME = user.getUid();
+                                ((MainActivity)getContext()).syncDB(0, false);
+                                getFragmentManager().beginTransaction().replace(R.id.fragment_container, new InFragment()).commit();
                             } else {
                                 msg.setTextColor(Color.parseColor("#D50A0A"));
                                 msg.setText("Неверный логин или пароль");
@@ -85,6 +102,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     }
 
     protected static boolean isSign() {
+        if(mAuth == null)
+        mAuth = FirebaseAuth.getInstance();
         return mAuth.getCurrentUser() != null;
     }
 

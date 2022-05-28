@@ -17,12 +17,12 @@
         android:theme="@style/Theme.Logpass">
 
         <activity
-            android:name=".InActivity"
+            android:name=".fragments.InFragment"
             android:exported="false"
             android:label="Личный кабинет"
             tools:ignore="Instantiatable" />
         <activity
-            android:name=".RegisterFragment"
+            android:name=".fragments.RegisterFragment"
             android:exported="false"
             android:label="Регистрация"
             tools:ignore="Instantiatable" />
@@ -37,9 +37,9 @@
         </activity>
 
         <receiver
-            android:name=".AlarmReceiver"
+            android:name=".recievers.AlarmReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true" />
     </application>
 
 </manifest>
