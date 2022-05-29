@@ -1,7 +1,10 @@
 package com.example.logpass;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -18,6 +21,7 @@ import com.example.logpass.classes.TaskItem;
 import com.example.logpass.fragments.AccountFragment;
 import com.example.logpass.fragments.InFragment;
 import com.example.logpass.fragments.MainFragment;
+import com.example.logpass.recievers.AlarmReceiver;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -207,6 +212,23 @@ public class MainActivity extends AppCompatActivity {
                             database.itemDao().update(item);
                         }
                         list.remove(item.id);
+                        if (Boolean.parseBoolean(item.enable)) {
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.set(Calendar.SECOND, 0);
+                            calendar.set(Calendar.MILLISECOND, 0);
+                            calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(item.time.substring(0, 2)));
+                            calendar.set(Calendar.MINUTE, Integer.parseInt(item.time.substring(3, 5)));
+                            calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(item.date.substring(0, 2)));
+                            calendar.set(Calendar.MONTH, Integer.parseInt(item.date.substring(3, 5)) - 1);
+                            calendar.set(Calendar.YEAR, Integer.parseInt(item.date.substring(6)));
+                            AlarmManager alarmMgr = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                            Intent intent1 = new Intent(getApplicationContext(), AlarmReceiver.class);
+                            intent1.putExtra("Task", item.task);
+                            intent1.putExtra("idStr", item.id);
+                            intent1.putExtra("Date", item.time + item.date);
+                            @SuppressLint("UnspecifiedImmutableFlag") PendingIntent alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), (int) System.currentTimeMillis(), intent1, PendingIntent.FLAG_ONE_SHOT);
+                            alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+                        }
                     }
                     for (int i = 0; i < list.size(); i++)
                         database.itemDao().deleteById(list.get(i));
