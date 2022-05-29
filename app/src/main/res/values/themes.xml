@@ -15,4 +15,8 @@
         <item name="dividerColor">#FF0000</item>
         <item name="colorButtonNormal">#EFEFEF</item>
     </style>
+    <style name="switchTheme" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">#BA0C0C</item>
+        <item name="colorSwitchThumbNormal">#BF3939</item>
+    </style>
 </resources>

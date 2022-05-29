@@ -1,20 +1,17 @@
 package com.example.logpass.adapters;
 
 import android.annotation.SuppressLint;
-
 import android.content.Context;
-
 import android.content.SharedPreferences;
-
-
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.appcompat.widget.SwitchCompat;
@@ -22,20 +19,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import com.example.logpass.DB.AppDB;
-
 import com.example.logpass.MainActivity;
 import com.example.logpass.R;
-
 import com.example.logpass.classes.TaskItem;
 import com.example.logpass.fragments.TaskShowFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +45,6 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CardHolder> {
     SharedPreferences preferences;
     SwitchCompat aSwitch;
     AppCompatCheckBox cb;
-    boolean arch;
     long ver;
 
 
@@ -82,6 +74,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CardHolder> {
         holder.tv_description.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
         holder.description.setText(isExpandable ? "Скрыть" : "Подробнее");
             cb = holder.checkBox;
+            cb.setChecked(false);
             aSwitch = holder.switchCompat;
             aSwitch.setChecked(Boolean.parseBoolean(item.enable));
             aSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -90,46 +83,48 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CardHolder> {
                 else
                     isEnabled("true", position, item);
             });
-            cb.setOnClickListener(v -> {
-                item.arch = "true";
-                item.done = "true";
-                update(item);
-                list.remove(position);
-                notifyItemRemoved(position);
-                ver = System.currentTimeMillis();
-                if(MainActivity.hasConnection(context)){
-                    mDataBase.child(user.getUid()).child(item.id).child("done").setValue("true");
-                    mDataBase.child(user.getUid()).child(item.id).child("arch").setValue("true");
-                    mDataBase.child(user.getUid()).child("version").setValue(ver);
-                }
-                preferences = context.getSharedPreferences("myprefs", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putLong(MainActivity.DATABASE_NAME+"version", ver).apply();
-/*
-                mDataBase.child(user.getUid()).child("archive").child(item.id).setValue(item);
-                mDataBase.child(user.getUid()).child("archive").child(item.id).child("done").setValue("true");
-                mDataBase.child(user.getUid()).child(item.id).removeValue();
-                mDataBase.child(user.getUid()).child("items").setValue(list.size() - 1);
- */
-            });
-        holder.itemView.setOnClickListener(v -> {
-
-            /*
-            if(arch)
-            activity.getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left).replace(R.id.fragment_container, new TaskShowArchiveFragment(item, context)).addToBackStack(null).commit();
-            else
-
-             */
-            ((AppCompatActivity) v.getContext()).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left).replace(R.id.fragment_container, new TaskShowFragment(item, list.size(), context)).addToBackStack(null).commit();
-
-        });
+            cb.setOnClickListener(v ->
+                deleteItem(holder.itemView, position, item));
+        holder.itemView.setOnClickListener(v ->
+            ((AppCompatActivity) v.getContext()).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left).replace(R.id.fragment_container, new TaskShowFragment(item, list.size(), context)).addToBackStack(null).commit());
     }
 
     private void isEnabled(String enable, int position, TaskItem item) {
-       // mDataBase.child(user.getUid()).child(id).child("enable").setValue(enable);
         item.enable = enable;
         list.get(position).enable = enable;
         update(item);
+        ver = System.currentTimeMillis();
+        if(MainActivity.hasConnection(context)){
+            mDataBase.child(user.getUid()).child(item.id).child("enable").setValue(String.valueOf(enable));
+            mDataBase.child(user.getUid()).child("version").setValue(ver);
+        }
+        preferences = context.getSharedPreferences("myprefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putLong(MainActivity.DATABASE_NAME+"version", ver).apply();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void deleteItem(View itemView, int position, TaskItem item){
+        Animation anim = AnimationUtils.loadAnimation(context,
+                android.R.anim.slide_out_right);
+        anim.setDuration(300);
+        itemView.startAnimation(anim);
+        new Handler().postDelayed(() -> {
+            list.remove(position);
+            notifyDataSetChanged();
+        }, anim.getDuration());
+        item.arch = "true";
+        item.done = "true";
+        update(item);
+        ver = System.currentTimeMillis();
+        if(MainActivity.hasConnection(context)){
+            mDataBase.child(user.getUid()).child(item.id).child("done").setValue("true");
+            mDataBase.child(user.getUid()).child(item.id).child("arch").setValue("true");
+            mDataBase.child(user.getUid()).child("version").setValue(ver);
+        }
+        preferences = context.getSharedPreferences("myprefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putLong(MainActivity.DATABASE_NAME+"version", ver).apply();
     }
 
 
@@ -138,51 +133,13 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CardHolder> {
         return list.size();
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     public void setList(List<TaskItem> list){
         this.list = list;
     }
 
-
-    public void getAll() {
-        list = new ArrayList<>();
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                List<TaskItem> items = database.itemDao().getAll();
-                list = items;
-            }
-        });
-        thread.start();
-    }
-
-    public void getUncompItems() {
-        list = new ArrayList<>();
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                List<TaskItem> items = database.itemDao().getUncompleted();
-                list = items;
-            }
-        });
-        thread.start();
-    }
-
-    public void deleteItem(TaskItem item) {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                database.itemDao().delete(item);
-            }
-        });
-        thread.start();
-    }
-
     public void update(TaskItem item) {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                database.itemDao().update(item);
-            }
-        });
+        Thread thread = new Thread(() ->
+            database.itemDao().update(item));
         thread.start();
     }
 

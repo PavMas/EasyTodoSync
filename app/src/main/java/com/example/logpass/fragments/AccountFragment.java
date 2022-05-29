@@ -19,9 +19,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.logpass.MainActivity;
 import com.example.logpass.R;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -34,11 +31,11 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     TextView msg;
     Button goRegBtn;
     View view;
+    Context context;
     protected static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     protected static FirebaseUser user;
     private String pass;
     private String log;
-    private final String APP_PREFERENCES = "myprefs";
 
     SharedPreferences mPrefs;
 
@@ -59,6 +56,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         signIn_btn = (Button) view.findViewById(R.id.signIn_btn);
         msg = (TextView) view.findViewById(R.id.id_msg);
         goRegBtn = (Button) view.findViewById(R.id.goReg);
+        context = requireContext();
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -67,30 +65,29 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         int id = v.getId();
         switch (id) {
             case R.id.goReg:
-                getFragmentManager().beginTransaction().replace(R.id.fragment_container, new RegisterFragment()).commit();
+                ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new RegisterFragment()).commit();
                 break;
             case R.id.signIn_btn:
                 pass = editPass.getText().toString();
                 log = editLog.getText().toString();
                 mAuth = FirebaseAuth.getInstance();
                 if (FieldsOk()) {
-                    mPrefs = getContext().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+                    mPrefs = context.getSharedPreferences(MainActivity.APP_PREFERENCES, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor  = mPrefs.edit();
                     mAuth = FirebaseAuth.getInstance();
-                    mAuth.signInWithEmailAndPassword(log, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                user = mAuth.getCurrentUser();
-                                assert user != null;
-                                editor.putString("dbname", user.getUid()).apply();
-                                MainActivity.DATABASE_NAME = user.getUid();
-                                ((MainActivity)getContext()).syncDB(0, false);
-                                getFragmentManager().beginTransaction().replace(R.id.fragment_container, new InFragment()).commit();
-                            } else {
-                                msg.setTextColor(Color.parseColor("#D50A0A"));
-                                msg.setText("Неверный логин или пароль");
-                            }
+                    mAuth.signInWithEmailAndPassword(log, pass).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            user = mAuth.getCurrentUser();
+                            assert user != null;
+                            editor.putString("dbname", user.getUid());
+                            editor.putLong(user.getUid()+"version", 0).apply();
+                            MainActivity.DATABASE_NAME = user.getUid();
+                            ((MainActivity)context).updateUser();
+                            ((MainActivity)context).startThread();
+                            ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new InFragment()).commit();
+                        } else {
+                            msg.setTextColor(Color.parseColor("#D50A0A"));
+                            msg.setText("Неверный логин или пароль");
                         }
                     });
                 } else {

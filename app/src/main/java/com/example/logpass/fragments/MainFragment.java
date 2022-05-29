@@ -9,8 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,7 +29,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import com.example.logpass.DB.AppDB;
-import com.example.logpass.DB.DatabaseCallback;
 import com.example.logpass.MainActivity;
 import com.example.logpass.R;
 import com.example.logpass.fragments.dialogs.TaskEditDialogMD;
@@ -75,12 +72,14 @@ public class MainFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (AccountFragment.isSign()) {
             ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left).replace(R.id.fragment_container, new ArchiveFragment()).commit();
-            getActivity().setTitle("EasyTodo: Архив");
+            requireActivity().setTitle("EasyTodo: Архив");
         } else
             Toast.makeText(getContext(), "Войдите в аккаунт", Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
     }
-    @SuppressLint({"UnspecifiedImmutableFlag", "NotifyDataSetChanged"})
+
+
+    @SuppressLint("UnspecifiedImmutableFlag")
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Nullable
     @Override
@@ -95,11 +94,7 @@ public class MainFragment extends Fragment {
         createNotificationChannel();
         init();
         setManagerAndAdapter();
-        getTasks(() -> {
-            setManagerAndAdapter();
-            adapter.setList(list);
-            adapter.notifyDataSetChanged();
-        });
+        getTasks();
         simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -117,14 +112,7 @@ public class MainFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(rv);
         if (user != null) {
             mDataBase = FirebaseDatabase.getInstance().getReference("Tasks");
-            //mDataBase.addValueEventListener(vListener);
-            add.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    TaskEditDialogMD.display(((AppCompatActivity)context).getSupportFragmentManager(), getContext());
-                }
-
-            });
+            add.setOnClickListener(v -> TaskEditDialogMD.display(((AppCompatActivity)context).getSupportFragmentManager(), getContext()));
         } else
             Toast.makeText(getContext(), "Пожалуйста, войдите в аккаунт или зарегестрируйтесь", Toast.LENGTH_LONG).show();
         return view;
@@ -150,7 +138,7 @@ public class MainFragment extends Fragment {
         int importance = NotificationManager.IMPORTANCE_HIGH;
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
         channel.setDescription(description);
-        NotificationManager notificationManager = getContext().getSystemService(NotificationManager.class);
+        NotificationManager notificationManager = requireContext().getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
     }
     @SuppressLint("NotifyDataSetChanged")
@@ -158,36 +146,15 @@ public class MainFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-    public void getTasks(DatabaseCallback callback) {
-        Thread thread = new Thread(() -> {
+    public void getTasks() {
+        @SuppressLint("NotifyDataSetChanged") Thread thread = new Thread(() -> {
             list = database.itemDao().getUncompleted();
-            callback.onComplete();
+            requireActivity().runOnUiThread(() -> {
+                adapter.setList(list);
+                adapter.notifyDataSetChanged();
+
+            });
         });
         thread.start();
     }
 }
-
-/*
-    ValueEventListener vListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot snapshot) {
-            if (items.size() > 0)
-                items.clear();
-            for (DataSnapshot ds : snapshot.child(AccountFragment.user.getUid()).getChildren()) {
-                ds.child("Tasks").child(AccountFragment.user.getUid()).child(ds.getKey());
-                TaskItem tItem = new TaskItem(ds.child("date").getValue(String.class), ds.child("time").getValue(String.class), ds.child("task").getValue(String.class), ds.child("enable").getValue(String.class), ds.child("id").getValue(String.class), ds.child("description").getValue(String.class), ds.child("edited").getValue(String.class), ds.child("done").getValue(String.class));
-                if (!ds.getKey().equals("items") && !ds.getKey().equals("archive"))
-                    items.add(tItem);
-                //updateItem(tItem);
-            }
-            //setManagerAndAdapter();
-            listAdapter.notifyDataSetChanged();
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError error) {
-            mDataBase.addValueEventListener(vListener);
-        }
-    };
-
- */

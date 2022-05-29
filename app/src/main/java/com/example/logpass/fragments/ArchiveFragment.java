@@ -1,5 +1,6 @@
 package com.example.logpass.fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,69 +15,51 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
+import com.example.logpass.DB.AppDB;
+import com.example.logpass.MainActivity;
 import com.example.logpass.R;
 import com.example.logpass.adapters.ArchAdapter;
 import com.example.logpass.classes.TaskItem;
-import com.example.logpass.adapters.MainAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ArchiveFragment extends Fragment {
 
     private View view;
     private RecyclerView rv;
-    DatabaseReference mDataBase;
-    private List<TaskItem> items = new ArrayList<>();
-    private ArchAdapter listAdapter;
+    private List<TaskItem> items;
+    private ArchAdapter adapter;
+    AppDB database;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.archive_fragment, container, false);
         setHasOptionsMenu(true);
-        rv = view.findViewById(R.id.archive);
+        init();
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mDataBase = FirebaseDatabase.getInstance().getReference("Tasks");
         setManagerAndAdapter();
-        //mDataBase.addValueEventListener(vListener);
+        getArchiveItems();
     }
-    /*
-    ValueEventListener vListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot snapshot) {
-            if(items.size() > 0)
-                items.clear();
-            for (DataSnapshot ds : snapshot.child(AccountFragment.user.getUid()).child("archive").getChildren()) {
-                ds.child("Tasks").child(AccountFragment.user.getUid()).child(ds.getKey());
-                TaskItem tItem = new TaskItem(ds.child("date").getValue(String.class), ds.child("time").getValue(String.class), ds.child("task").getValue(String.class), ds.child("enable").getValue(String.class), ds.child("id").getValue(String.class), ds.child("description").getValue(String.class), ds.child("done").getValue(String.class));
-                items.add(tItem);
-                //updateItem(tItem);
-            }
-            setManagerAndAdapter();
-            listAdapter.notifyDataSetChanged();
-        }
-        @Override
-        public void onCancelled(@NonNull DatabaseError error) {
-            mDataBase.addValueEventListener(vListener);
-        }
-    };
 
-     */
+    private void init(){
+        rv = view.findViewById(R.id.archive);
+        database = Room.databaseBuilder(requireContext(), AppDB.class, MainActivity.DATABASE_NAME).build();
+    }
 
     private void setManagerAndAdapter() {
         rv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        listAdapter = new ArchAdapter(getContext());
-        //listAdapter.setItems(items);
-        rv.setAdapter(listAdapter);
+        adapter = new ArchAdapter(getContext());
+        rv.setAdapter(adapter);
     }
 
     @Override
@@ -87,9 +70,21 @@ public class ArchiveFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        ((AppCompatActivity)getContext()).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.fragment_container, new MainFragment()).commit();
-        getActivity().setTitle("EasyTodo: Задачи");
+        ((AppCompatActivity)requireContext()).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.fragment_container, new MainFragment()).commit();
+        requireActivity().setTitle("EasyTodo: Задачи");
         return super.onOptionsItemSelected(item);
+    }
+
+    private void getArchiveItems(){
+        @SuppressLint("NotifyDataSetChanged") Thread thread = new Thread(() -> {
+            items = database.itemDao().getCompleted();
+            requireActivity().runOnUiThread(() -> {
+                adapter.setList(items);
+                adapter.notifyDataSetChanged();
+                database.close();
+            });
+        });
+        thread.start();
     }
 
 }

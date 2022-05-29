@@ -15,4 +15,8 @@
         <item name="dividerColor">#FF0000</item>
         <item name="colorButtonNormal">#E8E8E8</item>
     </style>
+    <style name="switchTheme" parent="Theme.AppCompat.Light">
+        <item name="trackTint">#E68E8E</item>
+        <item name="colorAccent">#BF3939</item>
+    </style>
 </resources>

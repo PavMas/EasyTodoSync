@@ -85,7 +85,6 @@ public class TaskEditDialogMD extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_FullScreenDialog);
     }
 
     @Override
@@ -115,7 +114,6 @@ public class TaskEditDialogMD extends DialogFragment {
         super.onViewCreated(view1, savedInstanceState);
         toolbar.setNavigationOnClickListener(v -> dismiss());
         toolbar.setTitle("Создать задачу");
-        //toolbar.inflateMenu(R.menu.dialog_menu);
         setTime.setOnClickListener(v -> {
             MaterialTimePicker materialTimePicker = new MaterialTimePicker.Builder()
                     .setTimeFormat(TimeFormat.CLOCK_24H)
@@ -145,28 +143,15 @@ public class TaskEditDialogMD extends DialogFragment {
                 calendar.set(Calendar.DAY_OF_MONTH, getDay(date));
                 calendar.set(Calendar.MONTH, getMonth(date));
                 calendar.set(Calendar.YEAR, Integer.parseInt(date.substring(date.length()-7, date.length()-3)));
-                // tv_date.setText(calendar.get(Calendar.DAY_OF_MONTH)+"."+calendar.get(Calendar.MONTH)+"."+calendar.get(Calendar.YEAR));
                 tv_date.setText(date);
                 date1 = calendar.get(Calendar.DAY_OF_MONTH)+"."+calendar.get(Calendar.MONTH)+"."+calendar.get(Calendar.YEAR);
-                //tv_date.setText(materialDatePicker.getHeaderText());
+
 
             });
 
             materialDatePicker.show(getChildFragmentManager(), "MD_DATE_PICKER");
         });
         crt.setOnClickListener(v -> {
-            /*
-            mDataBase = FirebaseDatabase.getInstance().getReference("Tasks");
-            mDataBase.child(user.getUid()).child("items").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DataSnapshot> task) {
-                    if(task.isSuccessful()){
-                        count = Integer.parseInt(String.valueOf(task.getResult().getValue()));
-                        createItem();
-                    }
-                }
-            });
-             */
             createItem();
         });
         toolbar.setOnMenuItemClickListener(item -> {
@@ -188,7 +173,6 @@ public class TaskEditDialogMD extends DialogFragment {
     }
     private void createItem(){
         if(FieldsOk()) {
-            //SharedPreferences mPrefs = requireActivity().getSharedPreferences("myprefs", Context.MODE_PRIVATE);
             String uid = user.getUid();
             long id = System.currentTimeMillis();
             task = et_task.getText().toString();
