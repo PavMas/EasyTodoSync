@@ -3,7 +3,6 @@ package com.example.logpass;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.room.Room;
 
@@ -31,7 +29,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     List<TaskItem> items;
 
+    List<String> itemsId = new ArrayList<>();
+
     @SuppressLint("StaticFieldLeak")
     protected static Context context;
 
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             new syncThread().start();
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MainFragment()).commit();
-        BottomNavigationView bottomNav = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         bottomNav.setOnItemSelectedListener(item -> {
             int anim = 0, anim1 = 0;
             Fragment selectedFragment = null;
@@ -140,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                     TaskItem tItem = new TaskItem(ds.child("id").getValue(String.class), ds.child("date").getValue(String.class), ds.child("time").getValue(String.class), ds.child("task").getValue(String.class), ds.child("enable").getValue(String.class), ds.child("description").getValue(String.class), ds.child("done").getValue(String.class), ds.child("edited").getValue(String.class), ds.child("arch").getValue(String.class));
                     if (!ds.getKey().equals("items") && !ds.getKey().equals("archive") && !ds.getKey().equals("version"))
                         items.add(tItem);
+                    itemsId.add(tItem.id);
                 }
                 mDatabase.getRoot().removeEventListener(this);
 
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                     loadToDB(notify);
                 else
                     loadToCloudDB();
-           }
+            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -197,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
 
         private void loadToDB(boolean notify) {
             Thread thread = new Thread(() -> {
-                //mDatabase.removeEventListener(listener);
                 synchronized (lock) {
                     List<String> list = database.itemDao().getIds();
                     for (int i = 0; i < items.size(); i++) {
@@ -223,17 +222,16 @@ public class MainActivity extends AppCompatActivity {
 
         private void loadToCloudDB() {
             Thread thread = new Thread(() -> {
-                //mDatabase.removeEventListener(listener);
                 synchronized (lock) {
                     TaskItem item;
                     List<TaskItem> items1 = database.itemDao().getAll();
                     for (int i = 0; i < items1.size(); i++) {
                         item = items1.get(i);
                         mDatabase.child(DATABASE_NAME).child(item.id).setValue(item);
-                        items.remove(item);
+                        itemsId.remove(item.id + "");
                     }
-                    for (int i = 0; i < items.size(); i++) {
-                        mDatabase.child(DATABASE_NAME).child(items.get(i).id).removeValue();
+                    for (int i = 0; i < itemsId.size(); i++) {
+                        mDatabase.child(DATABASE_NAME).child(itemsId.get(i) + "").removeValue();
                     }
                     mDatabase.child(DATABASE_NAME).child("version").setValue(verApp);
                 }

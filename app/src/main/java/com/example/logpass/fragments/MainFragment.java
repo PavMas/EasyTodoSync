@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,24 +32,22 @@ import androidx.room.Room;
 import com.example.logpass.DB.AppDB;
 import com.example.logpass.MainActivity;
 import com.example.logpass.R;
-import com.example.logpass.fragments.dialogs.TaskEditDialogMD;
-import com.example.logpass.classes.TaskItem;
 import com.example.logpass.adapters.MainAdapter;
+import com.example.logpass.classes.TaskItem;
+import com.example.logpass.fragments.dialogs.TaskEditDialogMD;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainFragment extends Fragment {
 
 
-    private static List<TaskItem> items = new ArrayList<>();
     View view;
     private RecyclerView rv;
-    private AppCompatButton add, sync;
+    private AppCompatButton add;
     private MainAdapter adapter;
     public static String CHANNEL_ID = "Main channel";
     static PendingIntent contentIntent;
@@ -56,6 +55,9 @@ public class MainFragment extends Fragment {
     private AppDB database;
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     Context context;
+
+
+    SharedPreferences preferences;
 
     List<TaskItem> list;
 
@@ -70,7 +72,7 @@ public class MainFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (AccountFragment.isSign()) {
-            ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left).replace(R.id.fragment_container, new ArchiveFragment()).commit();
+            ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left).replace(R.id.fragment_container, new ArchiveFragment()).commit();
             requireActivity().setTitle("EasyTodo: Архив");
         } else
             Toast.makeText(getContext(), "Войдите в аккаунт", Toast.LENGTH_SHORT).show();
@@ -102,8 +104,9 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                if(direction == ItemTouchHelper.RIGHT){
-
+                if (direction == ItemTouchHelper.RIGHT) {
+                    int position = viewHolder.getAdapterPosition();
+                    deleteItem(list.get(position));
                 }
             }
         };
@@ -111,7 +114,7 @@ public class MainFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(rv);
         if (user != null) {
             mDataBase = FirebaseDatabase.getInstance().getReference("Tasks");
-            add.setOnClickListener(v -> TaskEditDialogMD.display(((AppCompatActivity)context).getSupportFragmentManager(), getContext()));
+            add.setOnClickListener(v -> TaskEditDialogMD.display(((AppCompatActivity) context).getSupportFragmentManager(), getContext()));
         } else
             Toast.makeText(getContext(), "Пожалуйста, войдите в аккаунт или зарегестрируйтесь", Toast.LENGTH_LONG).show();
         return view;
@@ -121,6 +124,7 @@ public class MainFragment extends Fragment {
         add = view.findViewById(R.id.addTask);
         rv = view.findViewById(R.id.recycler_create);
         database = Room.databaseBuilder(requireContext(), AppDB.class, MainActivity.DATABASE_NAME).build();
+        preferences = requireContext().getSharedPreferences(MainActivity.APP_PREFERENCES, Context.MODE_PRIVATE);
     }
 
 
@@ -140,8 +144,9 @@ public class MainFragment extends Fragment {
         NotificationManager notificationManager = requireContext().getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
     }
+
     @SuppressLint("NotifyDataSetChanged")
-    protected void update(){
+    protected void update() {
         adapter.notifyDataSetChanged();
     }
 
@@ -149,6 +154,28 @@ public class MainFragment extends Fragment {
         @SuppressLint("NotifyDataSetChanged") Thread thread = new Thread(() -> {
             list = database.itemDao().getUncompleted();
             requireActivity().runOnUiThread(() -> {
+                adapter.setList(list);
+                adapter.notifyDataSetChanged();
+            });
+        });
+        thread.start();
+    }
+
+    private void deleteItem(TaskItem item) {
+        @SuppressLint("NotifyDataSetChanged") Thread thread = new Thread(() -> {
+            item.arch = "true";
+            item.done = "false";
+            database.itemDao().update(item);
+            SharedPreferences.Editor editor = preferences.edit();
+            long ver = System.currentTimeMillis();
+            if (MainActivity.hasConnection(context)) {
+                mDataBase.child(user.getUid()).child(item.id).child("done").setValue("false");
+                mDataBase.child(user.getUid()).child(item.id).child("arch").setValue("true");
+                mDataBase.child(user.getUid()).child("version").setValue(ver);
+            }
+            editor.putLong(MainActivity.DATABASE_NAME + "version", ver).apply();
+            requireActivity().runOnUiThread(() -> {
+                list.remove(item);
                 adapter.setList(list);
                 adapter.notifyDataSetChanged();
             });

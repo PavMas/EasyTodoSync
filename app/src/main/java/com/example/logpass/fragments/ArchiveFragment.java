@@ -22,8 +22,6 @@ import com.example.logpass.MainActivity;
 import com.example.logpass.R;
 import com.example.logpass.adapters.ArchAdapter;
 import com.example.logpass.classes.TaskItem;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -51,14 +49,14 @@ public class ArchiveFragment extends Fragment {
         getArchiveItems();
     }
 
-    private void init(){
+    private void init() {
         rv = view.findViewById(R.id.archive);
         database = Room.databaseBuilder(requireContext(), AppDB.class, MainActivity.DATABASE_NAME).build();
     }
 
     private void setManagerAndAdapter() {
         rv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        adapter = new ArchAdapter(getContext());
+        adapter = new ArchAdapter();
         rv.setAdapter(adapter);
     }
 
@@ -70,12 +68,12 @@ public class ArchiveFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        ((AppCompatActivity)requireContext()).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.fragment_container, new MainFragment()).commit();
+        ((AppCompatActivity) requireContext()).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.fragment_container, new MainFragment()).commit();
         requireActivity().setTitle("EasyTodo: Задачи");
         return super.onOptionsItemSelected(item);
     }
 
-    private void getArchiveItems(){
+    private void getArchiveItems() {
         @SuppressLint("NotifyDataSetChanged") Thread thread = new Thread(() -> {
             items = database.itemDao().getCompleted();
             requireActivity().runOnUiThread(() -> {

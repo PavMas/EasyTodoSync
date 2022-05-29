@@ -82,29 +82,4 @@
         app:layout_constraintTop_toBottomOf="@+id/et_pass"
         app:layout_constraintVertical_bias="0.952" />
 
-    <RadioGroup
-        android:layout_width="217dp"
-        android:layout_height="79dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.525"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.61">
-
-        <RadioButton
-            android:id="@+id/bt_r_main"
-            android:layout_width="match_parent"
-            android:layout_height="38dp"
-            android:text="Босс"
-            android:textSize="20sp" />
-
-        <RadioButton
-            android:id="@+id/bt_r_sub"
-            android:layout_width="match_parent"
-            android:layout_height="38dp"
-            android:text="Подчиненный"
-            android:textSize="20sp" />
-    </RadioGroup>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

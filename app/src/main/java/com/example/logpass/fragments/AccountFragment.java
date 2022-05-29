@@ -23,7 +23,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 
-
 public class AccountFragment extends Fragment implements View.OnClickListener {
     EditText editLog;
     EditText editPass;
@@ -51,11 +50,11 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     }
 
     private void init() {
-        editLog = (EditText) view.findViewById(R.id.id_log);
-        editPass = (EditText) view.findViewById(R.id.id_pass);
-        signIn_btn = (Button) view.findViewById(R.id.signIn_btn);
-        msg = (TextView) view.findViewById(R.id.id_msg);
-        goRegBtn = (Button) view.findViewById(R.id.goReg);
+        editLog = view.findViewById(R.id.id_log);
+        editPass = view.findViewById(R.id.id_pass);
+        signIn_btn = view.findViewById(R.id.signIn_btn);
+        msg = view.findViewById(R.id.id_msg);
+        goRegBtn = view.findViewById(R.id.goReg);
         context = requireContext();
     }
 
@@ -65,7 +64,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         int id = v.getId();
         switch (id) {
             case R.id.goReg:
-                ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new RegisterFragment()).commit();
+                ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left).replace(R.id.fragment_container, new RegisterFragment()).commit();
                 break;
             case R.id.signIn_btn:
                 pass = editPass.getText().toString();
@@ -73,18 +72,18 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
                 mAuth = FirebaseAuth.getInstance();
                 if (FieldsOk()) {
                     mPrefs = context.getSharedPreferences(MainActivity.APP_PREFERENCES, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor  = mPrefs.edit();
+                    SharedPreferences.Editor editor = mPrefs.edit();
                     mAuth = FirebaseAuth.getInstance();
                     mAuth.signInWithEmailAndPassword(log, pass).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             user = mAuth.getCurrentUser();
                             assert user != null;
                             editor.putString("dbname", user.getUid());
-                            editor.putLong(user.getUid()+"version", 0).apply();
+                            editor.putLong(user.getUid() + "version", 0).apply();
                             MainActivity.DATABASE_NAME = user.getUid();
-                            ((MainActivity)context).updateUser();
-                            ((MainActivity)context).startThread();
-                            ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new InFragment()).commit();
+                            ((MainActivity) context).updateUser();
+                            ((MainActivity) context).startThread();
+                            ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.fragment_container, new InFragment()).commit();
                         } else {
                             msg.setTextColor(Color.parseColor("#D50A0A"));
                             msg.setText("Неверный логин или пароль");
@@ -99,8 +98,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     }
 
     protected static boolean isSign() {
-        if(mAuth == null)
-        mAuth = FirebaseAuth.getInstance();
+        if (mAuth == null)
+            mAuth = FirebaseAuth.getInstance();
         return mAuth.getCurrentUser() != null;
     }
 

@@ -37,7 +37,6 @@
         android:layout_width="379dp"
         android:layout_height="178dp"
         android:ems="10"
-        android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,11 +61,13 @@
         android:layout_width="243dp"
         android:layout_height="62dp"
         android:ems="10"
+        android:textSize="30sp"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/eT_taskView_arch"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.095"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.076" />
+        app:layout_constraintVertical_bias="0.076"
+        tools:ignore="TextViewEdits" />
 </androidx.constraintlayout.widget.ConstraintLayout>

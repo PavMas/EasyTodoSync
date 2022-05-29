@@ -1,9 +1,5 @@
 package com.example.logpass.fragments;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,9 +11,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import com.example.logpass.MainActivity;
 import com.example.logpass.R;
-import com.example.logpass.fragments.AccountFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,7 +32,7 @@ public class InFragment extends Fragment {
 
     Button exit;
 
-    TextView tv_name, tv_surname, tv_role;
+    TextView tv_name, tv_surname;
 
     private final DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
 
@@ -52,8 +52,7 @@ public class InFragment extends Fragment {
             MainActivity.DATABASE_NAME = "defaultDB";
             FirebaseAuth.getInstance().signOut();
             AccountFragment.mAuth = null;
-            assert getFragmentManager() != null;
-            getFragmentManager().beginTransaction().replace(R.id.fragment_container, new AccountFragment()).commit();
+            ((AppCompatActivity) requireContext()).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.fragment_container, new AccountFragment()).commit();
             Toast.makeText(getActivity(), "Вы вышли из аккаунта", Toast.LENGTH_LONG).show();
         });
         myRef.addValueEventListener(new ValueEventListener() {
@@ -69,22 +68,21 @@ public class InFragment extends Fragment {
         });
 
 
-
         return view;
 
     }
 
-    private void init(){
+    private void init() {
         exit = view.findViewById(R.id.bt_signOut);
         tv_name = view.findViewById(R.id.tV_name);
         tv_surname = view.findViewById(R.id.tv_sur);
-        tv_role = view.findViewById(R.id.tV_role);
-    }
-    @SuppressLint("SetTextI18n")
-    private void print(DataSnapshot snapshot){
-        tv_name.setText("Имя: " + snapshot.child("Users").child(user.getUid()).child("name").getValue(String.class));
-        tv_surname.setText("Фамилия: " +snapshot.child("Users").child(user.getUid()).child("surname").getValue(String.class));
-        tv_role.setText("Роль: "+snapshot.child("Users").child(user.getUid()).child("role").getValue(String.class));
     }
 
+    @SuppressLint("SetTextI18n")
+    private void print(DataSnapshot snapshot) {
+        tv_name.setText("Имя: " + snapshot.child("Users").child(user.getUid()).child("name").getValue(String.class));
+        tv_surname.setText("Фамилия: " + snapshot.child("Users").child(user.getUid()).child("surname").getValue(String.class));
+
     }
+
+}

@@ -15,4 +15,5 @@
     <string name="task_delete_arch">Удалить из архива</string>
     <string name="description">Подробнее</string>
     <string name="cb_conplete">Выполнено</string>
+    <string name="descriptionText">Описание:</string>
 </resources>

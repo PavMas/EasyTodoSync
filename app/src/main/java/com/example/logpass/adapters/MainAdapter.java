@@ -48,8 +48,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CardHolder> {
     long ver;
 
 
-
-    public MainAdapter(Context context){
+    public MainAdapter(Context context) {
         this.context = context;
         database = Room.databaseBuilder(context, AppDB.class, MainActivity.DATABASE_NAME)
                 .build();
@@ -73,20 +72,20 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CardHolder> {
         boolean isExpandable = list.get(position).isExpandable();
         holder.tv_description.setVisibility(isExpandable ? View.VISIBLE : View.GONE);
         holder.description.setText(isExpandable ? "Скрыть" : "Подробнее");
-            cb = holder.checkBox;
-            cb.setChecked(false);
-            aSwitch = holder.switchCompat;
-            aSwitch.setChecked(Boolean.parseBoolean(item.enable));
-            aSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (!isChecked)
-                    isEnabled("false", position, item);
-                else
-                    isEnabled("true", position, item);
-            });
-            cb.setOnClickListener(v ->
+        cb = holder.checkBox;
+        cb.setChecked(false);
+        aSwitch = holder.switchCompat;
+        aSwitch.setChecked(Boolean.parseBoolean(item.enable));
+        aSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (!isChecked)
+                isEnabled("false", position, item);
+            else
+                isEnabled("true", position, item);
+        });
+        cb.setOnClickListener(v ->
                 deleteItem(holder.itemView, position, item));
         holder.itemView.setOnClickListener(v ->
-            ((AppCompatActivity) v.getContext()).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left).replace(R.id.fragment_container, new TaskShowFragment(item, list.size(), context)).addToBackStack(null).commit());
+                ((AppCompatActivity) v.getContext()).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left).replace(R.id.fragment_container, new TaskShowFragment(item, list.size(), context)).addToBackStack(null).commit());
     }
 
     private void isEnabled(String enable, int position, TaskItem item) {
@@ -94,17 +93,17 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CardHolder> {
         list.get(position).enable = enable;
         update(item);
         ver = System.currentTimeMillis();
-        if(MainActivity.hasConnection(context)){
+        if (MainActivity.hasConnection(context)) {
             mDataBase.child(user.getUid()).child(item.id).child("enable").setValue(String.valueOf(enable));
             mDataBase.child(user.getUid()).child("version").setValue(ver);
         }
         preferences = context.getSharedPreferences("myprefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putLong(MainActivity.DATABASE_NAME+"version", ver).apply();
+        editor.putLong(MainActivity.DATABASE_NAME + "version", ver).apply();
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void deleteItem(View itemView, int position, TaskItem item){
+    private void deleteItem(View itemView, int position, TaskItem item) {
         Animation anim = AnimationUtils.loadAnimation(context,
                 android.R.anim.slide_out_right);
         anim.setDuration(300);
@@ -117,14 +116,14 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CardHolder> {
         item.done = "true";
         update(item);
         ver = System.currentTimeMillis();
-        if(MainActivity.hasConnection(context)){
+        if (MainActivity.hasConnection(context)) {
             mDataBase.child(user.getUid()).child(item.id).child("done").setValue("true");
             mDataBase.child(user.getUid()).child(item.id).child("arch").setValue("true");
             mDataBase.child(user.getUid()).child("version").setValue(ver);
         }
         preferences = context.getSharedPreferences("myprefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putLong(MainActivity.DATABASE_NAME+"version", ver).apply();
+        editor.putLong(MainActivity.DATABASE_NAME + "version", ver).apply();
     }
 
 
@@ -133,13 +132,13 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CardHolder> {
         return list.size();
     }
 
-    public void setList(List<TaskItem> list){
+    public void setList(List<TaskItem> list) {
         this.list = list;
     }
 
     public void update(TaskItem item) {
         Thread thread = new Thread(() ->
-            database.itemDao().update(item));
+                database.itemDao().update(item));
         thread.start();
     }
 
@@ -149,6 +148,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CardHolder> {
         MaterialCardView cardView;
         SwitchCompat switchCompat;
         AppCompatCheckBox checkBox;
+
         public CardHolder(@NonNull View itemView) {
             super(itemView);
             init();
@@ -159,7 +159,8 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CardHolder> {
                 notifyItemChanged(position);
             });
         }
-        private void init(){
+
+        private void init() {
             task = itemView.findViewById(R.id.tv_date);
             date = itemView.findViewById(R.id.tv_task);
             description = itemView.findViewById(R.id.card_btn_des);

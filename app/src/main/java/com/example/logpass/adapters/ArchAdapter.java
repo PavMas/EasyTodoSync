@@ -1,7 +1,6 @@
 package com.example.logpass.adapters;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,14 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
-import com.example.logpass.DB.AppDB;
-import com.example.logpass.MainActivity;
 import com.example.logpass.R;
 import com.example.logpass.classes.TaskItem;
 import com.example.logpass.fragments.TaskShowArchiveFragment;
-import com.example.logpass.fragments.TaskShowFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +21,6 @@ import java.util.List;
 public class ArchAdapter extends RecyclerView.Adapter<ArchAdapter.ArchiveHolder> {
 
     List<TaskItem> list = new ArrayList<>();
-
-    public ArchAdapter(Context context) {
-    }
 
     @NonNull
     @Override
@@ -41,7 +33,7 @@ public class ArchAdapter extends RecyclerView.Adapter<ArchAdapter.ArchiveHolder>
     @Override
     public void onBindViewHolder(@NonNull ArchiveHolder holder, int position) {
         TaskItem item = list.get(position);
-        holder.date.setText(item.date+"     "+item.time);
+        holder.date.setText(item.date + "     " + item.time);
         holder.task.setText(item.task);
         if (Boolean.parseBoolean(item.done))
             holder.done.setText("Выполнено");
@@ -58,19 +50,20 @@ public class ArchAdapter extends RecyclerView.Adapter<ArchAdapter.ArchiveHolder>
         return list.size();
     }
 
-    public void setList(List<TaskItem> list){
+    public void setList(List<TaskItem> list) {
         this.list = list;
     }
 
-    static class ArchiveHolder extends RecyclerView.ViewHolder{
+    static class ArchiveHolder extends RecyclerView.ViewHolder {
 
         TextView task, date, done;
+
         public ArchiveHolder(@NonNull View itemView) {
             super(itemView);
             init();
         }
 
-        private void init(){
+        private void init() {
             date = itemView.findViewById(R.id.tv_date);
             task = itemView.findViewById(R.id.tv_task);
             done = itemView.findViewById(R.id.tv_done);

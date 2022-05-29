@@ -4,6 +4,7 @@ package com.example.logpass.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,7 +53,7 @@ public class TaskShowArchiveFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.task_show_fragment_arch, container, false);
+        view = inflater.inflate(R.layout.archive_item_show, container, false);
         setHasOptionsMenu(true);
         init();
         return view;
@@ -65,18 +66,17 @@ public class TaskShowArchiveFragment extends Fragment {
         date_tV.setText(item.date);
         time_tV.setText(item.time);
         edit_task.setText(item.description);
+        edit_task.setMovementMethod(new ScrollingMovementMethod());
         mDatabase = FirebaseDatabase.getInstance().getReference("Tasks");
         del_task.setOnClickListener(v -> {
-            preferences = requireActivity().getSharedPreferences("myprefs", Context.MODE_PRIVATE);
+            preferences = requireActivity().getSharedPreferences(MainActivity.APP_PREFERENCES, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
             delVer = System.currentTimeMillis();
-            if(MainActivity.hasConnection(context)) {
+            if (MainActivity.hasConnection(context)) {
                 mDatabase.child(MainActivity.DATABASE_NAME).child(item.id).removeValue();
                 mDatabase.child(MainActivity.DATABASE_NAME).child("version").setValue(delVer);
-                //mDatabase.child(MainActivity.DATABASE_NAME).child("delete").child("ids").child(item.id).setValue(item.id);
             }
-            editor.putLong(MainActivity.DATABASE_NAME+"version", delVer).apply();
-            //editor.putLong("delTime", delVer).apply();
+            editor.putLong(MainActivity.DATABASE_NAME + "version", delVer).apply();
             deleteItem(item);
         });
     }
@@ -89,12 +89,12 @@ public class TaskShowArchiveFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.fragment_container, new ArchiveFragment()).commit();
-            requireActivity().setTitle("EasyTodo: Архив");
+        ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.fragment_container, new ArchiveFragment()).commit();
+        requireActivity().setTitle("EasyTodo: Архив");
         return super.onOptionsItemSelected(item);
     }
 
-    private void init(){
+    private void init() {
         task_tV = view.findViewById(R.id.tV_taskView_arch);
         date_tV = view.findViewById(R.id.tV_dateView_arch);
         time_tV = view.findViewById(R.id.tV_timeView_arch);
@@ -102,7 +102,7 @@ public class TaskShowArchiveFragment extends Fragment {
         edit_task = view.findViewById(R.id.eT_taskView_arch);
     }
 
-    private void deleteItem(TaskItem item){
+    private void deleteItem(TaskItem item) {
         Thread thread = new Thread(() -> {
             database.itemDao().delete(item);
             requireActivity().runOnUiThread(() -> ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.fragment_container, new ArchiveFragment()).commit());

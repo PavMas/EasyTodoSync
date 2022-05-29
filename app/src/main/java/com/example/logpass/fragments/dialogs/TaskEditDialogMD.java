@@ -4,7 +4,6 @@ package com.example.logpass.fragments.dialogs;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Dialog;
-
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +17,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -26,12 +24,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.room.Room;
 
-import com.example.logpass.recievers.AlarmReceiver;
 import com.example.logpass.DB.AppDB;
 import com.example.logpass.MainActivity;
 import com.example.logpass.R;
 import com.example.logpass.classes.TaskItem;
 import com.example.logpass.fragments.MainFragment;
+import com.example.logpass.recievers.AlarmReceiver;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
@@ -65,7 +63,7 @@ public class TaskEditDialogMD extends DialogFragment {
     int count;
     String date1, task, time, descript;
 
-    public TaskEditDialogMD(Context context){
+    public TaskEditDialogMD(Context context) {
         database = Room.databaseBuilder(context, AppDB.class, MainActivity.DATABASE_NAME)
                 .build();
         this.context = context;
@@ -79,7 +77,7 @@ public class TaskEditDialogMD extends DialogFragment {
     @Override
     public void dismiss() {
         super.dismiss();
-        ((AppCompatActivity)context).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MainFragment()).commit();
+        ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MainFragment()).commit();
     }
 
     @Override
@@ -127,10 +125,10 @@ public class TaskEditDialogMD extends DialogFragment {
                 calendar.set(Calendar.MILLISECOND, 0);
                 calendar.set(Calendar.MINUTE, materialTimePicker.getMinute());
                 calendar.set(Calendar.HOUR_OF_DAY, materialTimePicker.getHour());
-                if(calendar.get(Calendar.MINUTE)<10)
-                    time = calendar.get(Calendar.HOUR_OF_DAY)+":"+"0"+calendar.get(Calendar.MINUTE);
+                if (calendar.get(Calendar.MINUTE) < 10)
+                    time = calendar.get(Calendar.HOUR_OF_DAY) + ":" + "0" + calendar.get(Calendar.MINUTE);
                 else
-                    time = calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE);
+                    time = calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE);
                 tv_time.setText(time);
             });
             materialTimePicker.show(getChildFragmentManager(), "MD_TIME_PICKER");
@@ -143,16 +141,15 @@ public class TaskEditDialogMD extends DialogFragment {
                 String date = materialDatePicker.getHeaderText();
                 calendar.set(Calendar.DAY_OF_MONTH, getDay(date));
                 calendar.set(Calendar.MONTH, getMonth(date));
-                calendar.set(Calendar.YEAR, Integer.parseInt(date.substring(date.length()-7, date.length()-3)));
+                calendar.set(Calendar.YEAR, Integer.parseInt(date.substring(date.length() - 7, date.length() - 3)));
                 tv_date.setText(date);
-                date1 = String.format("%02d.%02d.", calendar.get(Calendar.DAY_OF_MONTH), (calendar.get(Calendar.MONTH)+1))+calendar.get(Calendar.YEAR);
+                date1 = String.format("%02d.%02d.", calendar.get(Calendar.DAY_OF_MONTH), (calendar.get(Calendar.MONTH) + 1)) + calendar.get(Calendar.YEAR);
             });
 
             materialDatePicker.show(getChildFragmentManager(), "MD_DATE_PICKER");
         });
-        crt.setOnClickListener(v -> {
-            createItem();
-        });
+        crt.setOnClickListener(v ->
+                createItem());
         toolbar.setOnMenuItemClickListener(item -> {
             dismiss();
             return true;
@@ -160,7 +157,7 @@ public class TaskEditDialogMD extends DialogFragment {
         });
     }
 
-    private void init(){
+    private void init() {
         toolbar = view.findViewById(R.id.toolbar);
         crt = view.findViewById(R.id.create_btn);
         setTime = view.findViewById(R.id.set_time_btn);
@@ -170,53 +167,55 @@ public class TaskEditDialogMD extends DialogFragment {
         et_task = view.findViewById(R.id.create_task);
         et_descript = view.findViewById(R.id.create_task_deskript);
     }
-    private void createItem(){
-        if(FieldsOk()) {
+
+    private void createItem() {
+        if (FieldsOk()) {
             String uid = user.getUid();
             long id = System.currentTimeMillis();
             task = et_task.getText().toString();
             descript = et_descript.getText().toString();
-            TaskItem item = new TaskItem(id+"", date1, time, task, "true", descript, "false", "false", "false");
+            TaskItem item = new TaskItem(id + "", date1, time, task, "true", descript, "false", "false", "false");
             addItem(item);
             SharedPreferences.Editor editor = requireActivity().getSharedPreferences("myprefs", Context.MODE_PRIVATE).edit();
-            editor.putLong(uid+"version", id).apply();
-            if(MainActivity.hasConnection(requireContext())){
+            editor.putLong(uid + "version", id).apply();
+            if (MainActivity.hasConnection(requireContext())) {
                 mDataBase.child(uid).child("items").setValue(count + 1);
-                mDataBase.child(uid).child(id+"").setValue(item);
+                mDataBase.child(uid).child(id + "").setValue(item);
                 mDataBase.child(uid).child("version").setValue(id);
             }
             AlarmManager alarmMgr = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
             Intent intent1 = new Intent(getContext(), AlarmReceiver.class);
             intent1.putExtra("Task", et_task.getText().toString());
             intent1.putExtra("id", id);
-            intent1.putExtra("idStr", id+"");
-            intent1.putExtra("Date", time+date1);
-            @SuppressLint("UnspecifiedImmutableFlag") PendingIntent alarmIntent = PendingIntent.getBroadcast(getContext(), (int)System.currentTimeMillis(), intent1, PendingIntent.FLAG_ONE_SHOT);
+            intent1.putExtra("idStr", id + "");
+            intent1.putExtra("Date", time + date1);
+            @SuppressLint("UnspecifiedImmutableFlag") PendingIntent alarmIntent = PendingIntent.getBroadcast(getContext(), (int) System.currentTimeMillis(), intent1, PendingIntent.FLAG_ONE_SHOT);
             alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
             dismiss();
 
         }
     }
-    private boolean FieldsOk(){
-        if(tv_time.getText().equals("")||tv_date.getText().equals("")||et_task.getText().toString().equals(""))
+
+    private boolean FieldsOk() {
+        if (tv_time.getText().equals("") || tv_date.getText().equals("") || et_task.getText().toString().equals(""))
             return false;
         else
             try {
                 user.getUid();
                 return true;
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 Toast.makeText(getContext(), "Вы не вошли в аккаунт", Toast.LENGTH_LONG).show();
                 return false;
             }
     }
-    public static int getMonth(String str){
+
+    public static int getMonth(String str) {
         String sub;
-        if(str.charAt(1) == ' ')
+        if (str.charAt(1) == ' ')
             sub = str.substring(2, 5);
         else
             sub = str.substring(3, 6);
-        switch (sub){
+        switch (sub) {
             case "янв":
                 return 0;
             case "фев":
@@ -244,14 +243,15 @@ public class TaskEditDialogMD extends DialogFragment {
         }
         return 0;
     }
-    public static int getDay(String str){
-        if(str.charAt(1) == ' ')
+
+    public static int getDay(String str) {
+        if (str.charAt(1) == ' ')
             return str.charAt(0) - 48;
         else
             return Integer.parseInt(str.substring(0, 2));
     }
 
-    public void addItem(TaskItem twit){
+    public void addItem(TaskItem twit) {
         Thread thread = new Thread(() -> {
             database.itemDao().insert(twit);
             database.close();

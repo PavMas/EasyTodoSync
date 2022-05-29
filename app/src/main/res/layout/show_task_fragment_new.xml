@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tV_taskView_arch"
+    <EditText
+        android:id="@+id/tV_taskView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -21,7 +21,7 @@
         android:layout_marginTop="20dp">
 
         <TextView
-            android:id="@+id/tV_dateView_arch"
+            android:id="@+id/tV_dateView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
@@ -31,7 +31,7 @@
             tools:ignore="TextViewEdits" />
 
         <TextView
-            android:id="@+id/tV_timeView_arch"
+            android:id="@+id/tV_timeView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
@@ -53,30 +53,38 @@
             android:padding="2dp"
             android:text="@string/descriptionText"
             android:textStyle="italic"/>
-    <TextView
-        android:id="@+id/eT_taskView_arch"
-        android:layout_width="match_parent"
-        android:layout_height="434dp"
-        android:textSize="30sp"
-        android:padding="15dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginEnd="1dp"
-        android:scrollbars ="vertical"
-        />
+        <EditText
+            android:id="@+id/eT_taskView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:padding="15dp"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="35dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="164dp"
+            android:scrollbars ="vertical"
+            />
 
-    <TextView
-        android:id="@+id/delete_task_arch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/task_delete_arch"
-        android:textColor="#FF0000"
-        android:textSize="28sp"
-        android:padding="15dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_gravity="center|bottom"
-        android:gravity="center" />
+        <TextView
+            android:id="@+id/delete_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/task_delete"
+            android:textColor="#FF0000"
+            android:textSize="28sp"
+            android:padding="10dp"
+            android:layout_marginBottom="100dp"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center|bottom"
+            android:gravity="center" />
+        <Button
+            android:id="@+id/btn_crtView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="@string/btn_crt"
+            android:layout_gravity="bottom|center"/>
 
     </FrameLayout>
 </LinearLayout>
