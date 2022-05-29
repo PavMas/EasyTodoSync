@@ -8,11 +8,11 @@
 
     <EditText
         android:id="@+id/et_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="250dp"
+        android:layout_height="52dp"
         android:layout_marginTop="36dp"
         android:ems="10"
-        android:hint="Имя"
+        android:hint="@string/name_reg"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -21,11 +21,11 @@
 
     <EditText
         android:id="@+id/et_surname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="250dp"
+        android:layout_height="52dp"
         android:layout_marginTop="48dp"
         android:ems="10"
-        android:hint="Фамилия"
+        android:hint="@string/surname_reg"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -34,12 +34,11 @@
 
     <EditText
         android:id="@+id/et_email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="250dp"
+        android:layout_height="52dp"
         android:layout_marginTop="48dp"
         android:ems="10"
-        android:hint="E-mail"
-        android:inputType="textPersonName"
+        android:hint="@string/e_mail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,9 +46,9 @@
 
     <Button
         android:id="@+id/regBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Зарегистрироваться"
+        android:layout_width="230dp"
+        android:layout_height="52dp"
+        android:text="@string/reg_str"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -59,11 +58,11 @@
 
     <EditText
         android:id="@+id/et_pass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="250dp"
+        android:layout_height="52dp"
         android:layout_marginTop="48dp"
         android:ems="10"
-        android:hint="Пароль"
+        android:hint="@string/pass_reg"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.507"

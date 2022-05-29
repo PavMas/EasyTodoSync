@@ -3,7 +3,7 @@
     <string name="hint_log">Введите логин</string>
     <string name="hint_pass">Введите пароль</string>
     <string name="btn">Вход</string>
-    <string name="btn_set">SET</string>
+    <string name="btn_set">Задать</string>
     <string name="btn_crt">Сохранить</string>
     <string name="text_label_1">Главная</string>
     <string name="text_label_2">Аккаунт</string>
@@ -16,4 +16,10 @@
     <string name="description">Подробнее</string>
     <string name="cb_conplete">Выполнено</string>
     <string name="descriptionText">Описание:</string>
+    <string name="name_reg">Имя</string>
+    <string name="surname_reg">Фамилия</string>
+    <string name="e_mail">E-mail</string>
+    <string name="reg_str">Зарегистрироваться</string>
+    <string name="pass_reg">Пароль (не менее 6 знаков)</string>
+    <string name="crt_btn">Создать</string>
 </resources>
