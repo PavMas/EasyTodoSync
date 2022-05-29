@@ -69,13 +69,14 @@ public class TaskShowArchiveFragment extends Fragment {
         del_task.setOnClickListener(v -> {
             preferences = requireActivity().getSharedPreferences("myprefs", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
+            delVer = System.currentTimeMillis();
             if(MainActivity.hasConnection(context)) {
-                delVer = System.currentTimeMillis();
                 mDatabase.child(MainActivity.DATABASE_NAME).child(item.id).removeValue();
-                mDatabase.child(MainActivity.DATABASE_NAME).child("delete").child("time").setValue(delVer);
-                mDatabase.child(MainActivity.DATABASE_NAME).child("delete").child("ids").child(item.id).setValue(item.id);
+                mDatabase.child(MainActivity.DATABASE_NAME).child("version").setValue(delVer);
+                //mDatabase.child(MainActivity.DATABASE_NAME).child("delete").child("ids").child(item.id).setValue(item.id);
             }
-            editor.putLong("delTime", delVer).apply();
+            editor.putLong(MainActivity.DATABASE_NAME+"version", delVer).apply();
+            //editor.putLong("delTime", delVer).apply();
             deleteItem(item);
         });
     }

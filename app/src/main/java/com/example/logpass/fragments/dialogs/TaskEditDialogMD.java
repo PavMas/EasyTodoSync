@@ -109,6 +109,7 @@ public class TaskEditDialogMD extends DialogFragment {
     }
 
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void onViewCreated(@NonNull View view1, Bundle savedInstanceState) {
         super.onViewCreated(view1, savedInstanceState);
@@ -144,9 +145,7 @@ public class TaskEditDialogMD extends DialogFragment {
                 calendar.set(Calendar.MONTH, getMonth(date));
                 calendar.set(Calendar.YEAR, Integer.parseInt(date.substring(date.length()-7, date.length()-3)));
                 tv_date.setText(date);
-                date1 = calendar.get(Calendar.DAY_OF_MONTH)+"."+calendar.get(Calendar.MONTH)+"."+calendar.get(Calendar.YEAR);
-
-
+                date1 = String.format("%02d.%02d.", calendar.get(Calendar.DAY_OF_MONTH), (calendar.get(Calendar.MONTH)+1))+calendar.get(Calendar.YEAR);
             });
 
             materialDatePicker.show(getChildFragmentManager(), "MD_DATE_PICKER");
@@ -226,7 +225,7 @@ public class TaskEditDialogMD extends DialogFragment {
                 return 2;
             case "апр":
                 return 3;
-            case "май":
+            case "мая":
                 return 4;
             case "июн":
                 return 5;

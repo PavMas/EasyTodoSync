@@ -1,5 +1,6 @@
 package com.example.logpass.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -36,10 +37,11 @@ public class ArchAdapter extends RecyclerView.Adapter<ArchAdapter.ArchiveHolder>
         return new ArchiveHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ArchiveHolder holder, int position) {
         TaskItem item = list.get(position);
-        holder.date.setText(item.date);
+        holder.date.setText(item.date+"     "+item.time);
         holder.task.setText(item.task);
         if (Boolean.parseBoolean(item.done))
             holder.done.setText("Выполнено");

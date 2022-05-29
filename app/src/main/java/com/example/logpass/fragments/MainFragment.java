@@ -54,7 +54,6 @@ public class MainFragment extends Fragment {
     static PendingIntent contentIntent;
     DatabaseReference mDataBase;
     private AppDB database;
-    int count;
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     Context context;
 
@@ -152,7 +151,6 @@ public class MainFragment extends Fragment {
             requireActivity().runOnUiThread(() -> {
                 adapter.setList(list);
                 adapter.notifyDataSetChanged();
-
             });
         });
         thread.start();

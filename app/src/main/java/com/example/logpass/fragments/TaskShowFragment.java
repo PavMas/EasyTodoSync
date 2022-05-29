@@ -140,7 +140,7 @@ public class TaskShowFragment extends Fragment {
                 calendar.set(Calendar.DAY_OF_MONTH, TaskEditDialogMD.getDay(date));
                 calendar.set(Calendar.MONTH, TaskEditDialogMD.getMonth(date));
                 calendar.set(Calendar.YEAR, Integer.parseInt(date.substring(date.length()-7, date.length()-3)));
-                @SuppressLint("DefaultLocale") String date1 = String.format("%02d.%02d.", calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH))+calendar.get(Calendar.YEAR);
+                @SuppressLint("DefaultLocale") String date1 = String.format("%02d.%02d.", calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH)+1)+calendar.get(Calendar.YEAR);
                 date_tV.setText(date1);
                 item.date = date1;
                 /*
