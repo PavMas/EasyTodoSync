@@ -52,6 +52,7 @@ public class InFragment extends Fragment {
             MainActivity.DATABASE_NAME = "defaultDB";
             FirebaseAuth.getInstance().signOut();
             AccountFragment.mAuth = null;
+            ((MainActivity)requireContext()).updateUser();
             ((AppCompatActivity) requireContext()).getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.fragment_container, new AccountFragment()).commit();
             Toast.makeText(getActivity(), "Вы вышли из аккаунта", Toast.LENGTH_LONG).show();
         });
