@@ -63,11 +63,11 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.CardHolder> {
         return new CardHolder(view);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     @Override
     public void onBindViewHolder(@NonNull CardHolder holder, int position) {
         TaskItem item = list.get(position);
-        holder.date.setText(item.date);
+        holder.date.setText(item.date+"  "+item.time);
         holder.task.setText(item.task);
         holder.tv_description.setText(item.description);
         boolean isExpandable = list.get(position).isExpandable();

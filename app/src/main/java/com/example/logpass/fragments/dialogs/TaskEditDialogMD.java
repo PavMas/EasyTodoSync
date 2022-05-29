@@ -125,10 +125,7 @@ public class TaskEditDialogMD extends DialogFragment {
                 calendar.set(Calendar.MILLISECOND, 0);
                 calendar.set(Calendar.MINUTE, materialTimePicker.getMinute());
                 calendar.set(Calendar.HOUR_OF_DAY, materialTimePicker.getHour());
-                if (calendar.get(Calendar.MINUTE) < 10)
-                    time = calendar.get(Calendar.HOUR_OF_DAY) + ":" + "0" + calendar.get(Calendar.MINUTE);
-                else
-                    time = calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE);
+                    time = String.format("%02d:%02d",calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
                 tv_time.setText(time);
             });
             materialTimePicker.show(getChildFragmentManager(), "MD_TIME_PICKER");
